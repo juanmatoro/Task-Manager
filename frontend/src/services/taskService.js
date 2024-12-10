@@ -12,6 +12,13 @@ export const addTask = async (task) => {
   return response.data;
 };
 
+/**
+ * Updates a task with the given ID using the provided updates.
+ *
+ * @param {string} id - The ID of the task to update.
+ * @param {Object} updates - An object containing the updates to apply to the task.
+ * @returns {Promise<Object>} A promise that resolves to the updated task data.
+ */
 export const updateTask = async (id, updates) => {
   const response = await axios.put(`${API_URL}/${id}`, updates);
   return response.data;
