@@ -30,6 +30,35 @@ import {
  *
  * @type {import('pinia').DefineStore<"taskStore", State, Getters, Actions>}
  */
+/**
+ * A store for managing tasks with state, getters, and actions.
+ *
+ * @typedef {Object} Task
+ * @property {string} _id - The unique identifier of the task.
+ * @property {string} title - The title of the task.
+ * @property {boolean} completed - The completion status of the task.
+ *
+ * @typedef {Object} TaskStoreState
+ * @property {Task[]} tasks - The list of tasks.
+ * @property {string} filter - The current filter ('all', 'completed', 'not_completed').
+ *
+ * @typedef {Object} TaskStoreGetters
+ * @property {function(TaskStoreState): Task[]} filteredTasks - Returns the tasks filtered by the current filter.
+ *
+ * @typedef {Object} TaskStoreActions
+ * @property {function(): Promise<void>} fetchTasks - Fetches tasks from the server and updates the state.
+ * @property {function(Task): Promise<void>} createTask - Creates a new task and adds it to the state.
+ * @property {function(Task): Promise<void>} toggleTaskCompletion - Toggles the completion status of a task.
+ * @property {function(string): Promise<void>} removeTask - Removes a task by its ID.
+ * @property {function(string): void} setFilter - Sets the current filter.
+ *
+ * @typedef {Object} TaskStore
+ * @property {TaskStoreState} state - The state of the task store.
+ * @property {TaskStoreGetters} getters - The getters of the task store.
+ * @property {TaskStoreActions} actions - The actions of the task store.
+ *
+ * @returns {TaskStore} The task store.
+ */
 export const useTaskStore = defineStore("taskStore", {
   state: () => ({
     tasks: [], // Lista de tareas
@@ -61,6 +90,15 @@ export const useTaskStore = defineStore("taskStore", {
         console.error("Error creating task:", error);
       }
     },
+    /**
+     * Toggles the completion status of a task.
+     *
+     * @param {Object} task - The task object to toggle completion status.
+     * @param {string} task._id - The unique identifier of the task.
+     * @param {boolean} task.completed - The current completion status of the task.
+     * @returns {Promise<void>} - A promise that resolves when the task completion status has been toggled.
+     * @throws {Error} - Throws an error if there is an issue toggling the task completion.
+     */
     async toggleTaskCompletion(task) {
       try {
         const updatedTask = await updateTask(task._id, {
@@ -75,6 +113,16 @@ export const useTaskStore = defineStore("taskStore", {
         console.error("Error toggling task completion:", error);
       }
     },
+    /**
+     * Removes a task by its ID.
+     *
+     * This function attempts to delete a task from the server using the provided ID.
+     * If the deletion is successful, it updates the local tasks array by filtering out the deleted task.
+     * If an error occurs during the deletion process, it logs the error to the console.
+     *
+     * @param {string} id - The ID of the task to be removed.
+     * @returns {Promise<void>} A promise that resolves when the task is removed.
+     */
     async removeTask(id) {
       try {
         await deleteTask(id);
